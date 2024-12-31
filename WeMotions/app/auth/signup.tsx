@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface FormData {
   firstName: string;
@@ -117,7 +118,7 @@ export default function SignUp() {
                   placeholder="First name"
                   placeholderTextColor="#666666"
                   value={formData.firstName}
-                  onChangeText={(text) => setFormData(prev => ({ ...prev, firstName: text }))}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, firstName: text }))} 
                   onFocus={() => setFocusedField('firstName')}
                   onBlur={() => setFocusedField(null)}
                 />
@@ -133,7 +134,7 @@ export default function SignUp() {
                   placeholder="Last name"
                   placeholderTextColor="#666666"
                   value={formData.lastName}
-                  onChangeText={(text) => setFormData(prev => ({ ...prev, lastName: text }))}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, lastName: text }))} 
                   onFocus={() => setFocusedField('lastName')}
                   onBlur={() => setFocusedField(null)}
                 />
@@ -150,7 +151,7 @@ export default function SignUp() {
                 placeholder="Username"
                 placeholderTextColor="#666666"
                 value={formData.username}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, username: text }))}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, username: text }))} 
                 onFocus={() => setFocusedField('username')}
                 onBlur={() => setFocusedField(null)}
                 autoCapitalize="none"
@@ -169,7 +170,7 @@ export default function SignUp() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={formData.email}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, email: text }))}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, email: text }))} 
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
               />
@@ -186,7 +187,7 @@ export default function SignUp() {
                 placeholderTextColor="#666666"
                 secureTextEntry
                 value={formData.password}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))} 
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField(null)}
               />
@@ -203,7 +204,7 @@ export default function SignUp() {
                 placeholderTextColor="#666666"
                 secureTextEntry
                 value={formData.confirmPassword}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, confirmPassword: text }))}
+                onChangeText={(text) => setFormData(prev => ({ ...prev, confirmPassword: text }))} 
                 onFocus={() => setFocusedField('confirmPassword')}
                 onBlur={() => setFocusedField(null)}
               />
@@ -214,12 +215,18 @@ export default function SignUp() {
           </View>
         </View>
 
-        <TouchableOpacity 
-          style={styles.continueButton} 
-          onPress={handleSubmit}
+        {/* Gradient applied to the Continue button */}
+        <LinearGradient 
+          colors={['#A858F4', '#9032E6']} 
+          style={styles.continueButton}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={handleSubmit}
+            style={styles.continueButtonContent}
+          >
+            <Text style={styles.continueButtonText}>Continue</Text>
+          </TouchableOpacity>
+        </LinearGradient>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -307,12 +314,15 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     height: 56,
-    backgroundColor: '#8B5CF6',
-    justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 12,
     marginHorizontal: 24,
     marginBottom: Platform.OS === 'ios' ? 34 : 24,
+  },
+  continueButtonContent: {
+    height: 56,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   continueButtonText: {
     fontSize: 16,
