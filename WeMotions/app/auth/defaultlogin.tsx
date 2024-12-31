@@ -37,10 +37,12 @@ export default function DefaultLogin() {
           </View>
         </View>
         <View style={styles.headerContent}>
-          <Link href="auth/signup" style={styles.backButton}>
+          <Link href="/onboarding" style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </Link>
-          <Text style={styles.headerText}>Sign up</Text>
+          <Link href="/auth/signup" style={styles.signupButton}>
+            <Text style={styles.headerText}>Sign up</Text>
+          </Link>
         </View>
       </View>
 
@@ -71,8 +73,7 @@ export default function DefaultLogin() {
             <AuthButton
               variant="social"
               onPress={() => {}}
-              icon={<Ionicons name="logo-apple" size={20} color="white" />}
-            >
+              icon={<Ionicons name="logo-apple" size={20} color="white" />}>
               continue with Apple
             </AuthButton>
 
@@ -84,8 +85,7 @@ export default function DefaultLogin() {
                   source={require('../../assets/images/google.png')}
                   style={styles.googleIcon}
                 />
-              }
-            >
+              }>
               continue with Google
             </AuthButton>
           </View>
@@ -138,11 +138,15 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
   },
+  signupButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
   headerText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
-    marginRight: 16,
   },
   content: {
     flex: 1,
