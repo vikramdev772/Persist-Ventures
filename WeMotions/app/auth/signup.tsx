@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -7,11 +7,14 @@ import {
   TouchableOpacity, 
   SafeAreaView, 
   KeyboardAvoidingView, 
-  Platform 
+  Platform,
+  Pressable,
+  ScrollView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { debounce } from 'lodash';
 
 interface FormData {
   firstName: string;
@@ -31,6 +34,43 @@ interface FormErrors {
   confirmPassword?: string;
 }
 
+interface FormFieldProps {
+  label: string;
+  field: keyof FormData;
+  errors: FormErrors;
+  value: string;
+  onChangeText: (text: string) => void;
+  setFocusedField: (field: keyof FormData | null) => void;
+  [key: string]: any;
+}
+
+const FormField: React.FC<FormFieldProps> = ({ 
+  label, 
+  field, 
+  errors, 
+  value, 
+  onChangeText, 
+  setFocusedField,
+  ...props 
+}) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.label}>{label}</Text>
+    <TextInput
+      {...props}
+      style={[styles.input, errors[field] && styles.inputError]}
+      placeholder={label}
+      placeholderTextColor="#666666"
+      value={value}
+      onChangeText={onChangeText}
+      onFocus={() => setFocusedField(field)}
+      onBlur={() => setFocusedField(null)}
+    />
+    {errors[field] && (
+      <Text style={styles.errorText}>{errors[field]}</Text>
+    )}
+  </View>
+);
+
 export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -44,8 +84,22 @@ export default function SignUp() {
   
   const [errors, setErrors] = useState<FormErrors>({});
   const [focusedField, setFocusedField] = useState<keyof FormData | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateForm = () => {
+  const debouncedEmailValidation = useCallback(
+    debounce((email: string) => {
+      if (email && !/\S+@\S+\.\S+/.test(email)) {
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email' }));
+      } else {
+        setErrors(prev => ({ ...prev, email: undefined }));
+      }
+    }, 300),
+    []
+  );
+
+  const validateForm = useCallback(() => {
     const newErrors: FormErrors = {};
     
     if (!formData.firstName.trim()) {
@@ -73,13 +127,21 @@ export default function SignUp() {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(async () => {
     if (validateForm()) {
-      router.push('/onboarding/profile-picture');
+      setIsSubmitting(true);
+      try {
+        // Perform sign-up logic here
+        await router.push('/onboarding/profile-picture');
+      } catch (error) {
+        console.error('Sign-up error:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
-  };
+  }, [validateForm, router]);
 
   const getInputStyle = (field: keyof FormData) => [
     styles.input,
@@ -98,13 +160,13 @@ export default function SignUp() {
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           
-          {/* Make the Login text clickable and navigate to auth/login */}
           <TouchableOpacity onPress={() => router.push('/auth/login')}>
             <Text style={styles.headerTitle}>Login</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.content}>
+        <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.title}>Sign Up</Text>
           <Text style={styles.subtitle}>
             Create an account to join the conversation and connect with your community
           </Text>
@@ -112,85 +174,77 @@ export default function SignUp() {
           <View style={styles.form}>
             <View style={styles.nameRow}>
               <View style={styles.nameField}>
-                <Text style={styles.label}>First name</Text>
-                <TextInput
-                  style={getInputStyle('firstName')}
-                  placeholder="First name"
-                  placeholderTextColor="#666666"
-                  value={formData.firstName}
-                  onChangeText={(text) => setFormData(prev => ({ ...prev, firstName: text }))} 
-                  onFocus={() => setFocusedField('firstName')}
-                  onBlur={() => setFocusedField(null)}
+                <FormField 
+                  label="First name" 
+                  field="firstName" 
+                  errors={errors} 
+                  value={formData.firstName} 
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, firstName: text }))}
+                  setFocusedField={setFocusedField}
                 />
-                {errors.firstName && (
-                  <Text style={styles.errorText}>{errors.firstName}</Text>
-                )}
               </View>
 
               <View style={styles.nameField}>
-                <Text style={styles.label}>Last name</Text>
-                <TextInput
-                  style={getInputStyle('lastName')}
-                  placeholder="Last name"
-                  placeholderTextColor="#666666"
-                  value={formData.lastName}
-                  onChangeText={(text) => setFormData(prev => ({ ...prev, lastName: text }))} 
-                  onFocus={() => setFocusedField('lastName')}
-                  onBlur={() => setFocusedField(null)}
+                <FormField 
+                  label="Last name" 
+                  field="lastName" 
+                  errors={errors} 
+                  value={formData.lastName} 
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, lastName: text }))}
+                  setFocusedField={setFocusedField}
                 />
-                {errors.lastName && (
-                  <Text style={styles.errorText}>{errors.lastName}</Text>
-                )}
               </View>
             </View>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Username</Text>
-              <TextInput
-                style={getInputStyle('username')}
-                placeholder="Username"
-                placeholderTextColor="#666666"
-                value={formData.username}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, username: text }))} 
-                onFocus={() => setFocusedField('username')}
-                onBlur={() => setFocusedField(null)}
-                autoCapitalize="none"
-              />
-              {errors.username && (
-                <Text style={styles.errorText}>{errors.username}</Text>
-              )}
-            </View>
+            <FormField 
+              label="Username" 
+              field="username" 
+              errors={errors} 
+              value={formData.username} 
+              onChangeText={(text) => setFormData(prev => ({ ...prev, username: text }))} 
+              setFocusedField={setFocusedField}
+              autoCapitalize="none" 
+            />
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={getInputStyle('email')}
-                placeholder="Email"
-                placeholderTextColor="#666666"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={formData.email}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, email: text }))} 
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-              />
-              {errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              )}
-            </View>
+            <FormField 
+              label="Email" 
+              field="email" 
+              errors={errors} 
+              value={formData.email} 
+              onChangeText={(text) => {
+                setFormData(prev => ({ ...prev, email: text }));
+                debouncedEmailValidation(text);
+              }} 
+              setFocusedField={setFocusedField}
+              keyboardType="email-address" 
+              autoCapitalize="none" 
+            />
 
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={getInputStyle('password')}
-                placeholder="Password"
-                placeholderTextColor="#666666"
-                secureTextEntry
-                value={formData.password}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))} 
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, errors.password && styles.inputError, styles.passwordInput]}
+                  placeholder="Password"
+                  placeholderTextColor="#666666"
+                  secureTextEntry={!showPassword}
+                  value={formData.password}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))} 
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <Pressable 
+                  style={styles.eyeIcon} 
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={8}
+                >
+                  <Ionicons 
+                    name={showPassword ? "eye" : "eye-off"} 
+                    size={20} 
+                    color="#999999" 
+                  />
+                </Pressable>
+              </View>
               {errors.password && (
                 <Text style={styles.errorText}>{errors.password}</Text>
               )}
@@ -198,35 +252,52 @@ export default function SignUp() {
 
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={getInputStyle('confirmPassword')}
-                placeholder="Confirm Password"
-                placeholderTextColor="#666666"
-                secureTextEntry
-                value={formData.confirmPassword}
-                onChangeText={(text) => setFormData(prev => ({ ...prev, confirmPassword: text }))} 
-                onFocus={() => setFocusedField('confirmPassword')}
-                onBlur={() => setFocusedField(null)}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, errors.confirmPassword && styles.inputError, styles.passwordInput]}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#666666"
+                  secureTextEntry={!showConfirmPassword}
+                  value={formData.confirmPassword}
+                  onChangeText={(text) => setFormData(prev => ({ ...prev, confirmPassword: text }))} 
+                  onFocus={() => setFocusedField('confirmPassword')}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <Pressable 
+                  style={styles.eyeIcon}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  hitSlop={8}
+                >
+                  <Ionicons 
+                    name={showConfirmPassword ? "eye" : "eye-off"} 
+                    size={20} 
+                    color="#999999" 
+                  />
+                </Pressable>
+              </View>
               {errors.confirmPassword && (
                 <Text style={styles.errorText}>{errors.confirmPassword}</Text>
               )}
             </View>
           </View>
-        </View>
+        </ScrollView>
 
-        {/* Gradient applied to the Continue button */}
-        <LinearGradient 
-          colors={['#A858F4', '#9032E6']} 
-          style={styles.continueButton}
+        <TouchableOpacity 
+          style={styles.continueButtonContainer} 
+          onPress={handleSubmit}
+          disabled={isSubmitting}
         >
-          <TouchableOpacity 
-            onPress={handleSubmit}
-            style={styles.continueButtonContent}
+          <LinearGradient 
+            colors={['#A858F4', '#9032E6']} 
+            style={styles.continueButton}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
           >
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
-        </LinearGradient>
+            <Text style={styles.continueButtonText}>
+              {isSubmitting ? 'Submitting...' : 'Continue'}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -236,7 +307,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    marginTop: 16,
   },
   keyboardView: {
     flex: 1,
@@ -246,9 +316,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 12 : 20,
+    paddingTop: Platform.OS === 'ios' ? 50 : 40,
     paddingBottom: 12,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   backButton: {
     width: 40,
@@ -263,6 +333,16 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
+  title: {
+    fontSize: 32,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
@@ -291,11 +371,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   input: {
-    height: 48,
+    height: 56,
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#333333',
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 16,
     color: '#FFFFFF',
     fontFamily: 'Poppins-Regular',
@@ -307,26 +387,39 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: '#FF4444',
   },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordInput: {
+    paddingRight: 50,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
   errorText: {
     color: '#FF4444',
     fontSize: 12,
     fontFamily: 'Poppins-Regular',
+    marginTop: 4,
   },
-  continueButton: {
-    height: 56,
-    borderRadius: 12,
+  continueButtonContainer: {
     marginHorizontal: 24,
     marginBottom: Platform.OS === 'ios' ? 34 : 24,
   },
-  continueButtonContent: {
+  continueButton: {
     height: 56,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   continueButtonText: {
-    fontSize: 16,
     color: '#FFFFFF',
+    fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
   },
 });
+
