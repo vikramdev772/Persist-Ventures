@@ -1,19 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { Link, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthButton } from '../components/ui/auth-button';
 
 export default function ProfilePicture() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.header}>
-        <Link href="/onboarding/username" style={styles.backButton}>
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
-        </Link>
-        <Pressable onPress={() => router.push('/onboarding/final')}>
+        </Pressable>
+        <Pressable onPress={() => router.push('/onboarding/SelectInterests')}>
           <Text style={styles.skipText}>Skip</Text>
         </Pressable>
       </View>
@@ -38,20 +38,23 @@ export default function ProfilePicture() {
       <View style={styles.bottomContent}>
         <View style={styles.progressWrapper}>
           <View style={styles.progressContainer}>
-            <View style={styles.progressCircle}>
-              <Text style={styles.progressText}>2</Text>
+            <View style={styles.progressCircleWrapper}>
+              <View style={styles.progressBackground}>
+                <View style={styles.progressArc} />
+                <View style={styles.progressWhiteArc} />
+              </View>
+              <Text style={styles.progressText}>2 out 3</Text>
             </View>
-            <View style={styles.progressLine} />
-            <Text style={styles.progressTotal}>out 3</Text>
           </View>
-          <AuthButton
-            variant="continue"
-            onPress={() => router.push('/onboarding/final')}
+
+          <TouchableOpacity
             style={styles.nextButton}
+            onPress={() => router.push('/onboarding/SelectInterests')}
           >
-            Next
-          </AuthButton>
+            <Text style={styles.nextButtonText}>Next</Text>
+          </TouchableOpacity>
         </View>
+        <View style={styles.homeIndicator} />
       </View>
     </View>
   );
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#9747FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#7BCBFF',
     borderWidth: 2,
     borderColor: '#000000',
     alignItems: 'center',
@@ -130,51 +133,88 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
   },
   bottomContent: {
-    height: 101,
-    width: '100%',
     paddingHorizontal: 24,
-    paddingVertical: 16,
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
+    paddingBottom: 32,
+    paddingTop: 16,
   },
   progressWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 24,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  progressCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+  progressCircleWrapper: {
+    position: 'relative',
+    width: 64,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  progressBackground: {
+    position: 'absolute',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    transform: [{ rotate: '-90deg' }]
+  },
+  progressArc: {
+    position: 'absolute',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 3,
+    borderLeftColor: '#9747FF',
+    borderTopColor: '#9747FF',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    transform: [{ rotate: '240deg' }]
+  },
+  progressWhiteArc: {
+    position: 'absolute',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 3,
+    borderLeftColor: '#FFFFFF',
+    borderTopColor: '#FFFFFF',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    transform: [{ rotate: '60deg' }]
   },
   progressText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
-  },
-  progressLine: {
-    width: 4,
-    height: 1,
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 4,
-  },
-  progressTotal: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Poppins',
+    letterSpacing: 0.1,
+    textAlign: 'center',
+    marginTop: 1,
   },
   nextButton: {
     width: 120,
-    height: 40,
-    backgroundColor: '#8A2BE2',
+    height: 48,
+    backgroundColor: '#F2E8FF',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nextButtonText: {
+    color: '#8A2BE2',
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
+  },
+  homeIndicator: {
+    width: 134,
+    height: 5,
+    backgroundColor: '#3C3C3C',
+    borderRadius: 2.5,
+    alignSelf: 'center',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Username() {
@@ -13,7 +13,7 @@ export default function Username() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Choose Your Username</Text>
         <Text style={styles.subtitle}>
@@ -35,12 +35,12 @@ export default function Username() {
         <View style={styles.progressWrapper}>
           <View style={styles.progressContainer}>
             <View style={styles.progressCircleWrapper}>
-              <View style={styles.progressArc} />
-              <View style={styles.progressCircle}>
-                <Text style={styles.progressText}>1</Text>
+              <View style={styles.progressRing}>
+                <View style={styles.baseRing} />
+                <View style={styles.progressArc} />
               </View>
+              <Text style={styles.progressText}>1 out 3</Text>
             </View>
-            <Text style={styles.outOfText}>out 3</Text>
           </View>
 
           <TouchableOpacity 
@@ -61,7 +61,7 @@ export default function Username() {
         </View>
         <View style={styles.homeIndicator} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -79,86 +79,87 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '600',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: 12,
     fontFamily: 'Poppins-SemiBold',
+    letterSpacing: 0.2,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#999999',
     marginBottom: 32,
-    lineHeight: 24,
-    fontFamily: 'Poppins',
+    lineHeight: 22,
+    fontFamily: 'Poppins-Regular',
+    letterSpacing: 0.1,
   },
   input: {
-    height: 48,
+    height: 56,
     borderWidth: 1,
     borderColor: '#333333',
-    borderRadius: 8,
+    borderRadius: 12,
     color: '#FFFFFF',
     paddingHorizontal: 16,
     fontSize: 16,
     marginTop: 8,
-    fontFamily: 'Poppins',
-    backgroundColor: 'transparent',
+    fontFamily: 'Poppins-Regular',
+    backgroundColor: 'rgba(28, 28, 28, 0.5)',
   },
   bottomContent: {
     paddingHorizontal: 24,
-    paddingBottom: 8,
+    paddingBottom: 32,
     paddingTop: 16,
   },
   progressWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 24,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   progressCircleWrapper: {
-    position: 'relative',
-    width: 32,
-    height: 32,
-  },
-  progressCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+    width: 64,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+  },
+  progressRing: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    transform: [{ rotate: '210deg' }],
+  },
+  baseRing: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderWidth: 3,
+    borderRadius: 32,
+    borderColor: '#FFFFFF', 
   },
   progressArc: {
     position: 'absolute',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderLeftColor: '#8A2BE2',
-    borderTopColor: '#8A2BE2',
+    width: '100%',
+    height: '100%',
+    borderWidth: 3,
+    borderRadius: 32,
+    borderColor: '#8B5CF6', 
     borderRightColor: 'transparent',
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '45deg' }],
   },
   progressText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
-  },
-  outOfText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    marginLeft: 8,
-    fontFamily: 'Poppins',
+    letterSpacing: 0.1,
+    textAlign: 'center',
   },
   nextButton: {
     width: 120,
-    height: 40,
-    backgroundColor: '#E6D8F9',
-    borderRadius: 20,
+    height: 48,
+    backgroundColor: '#F2E8FF',
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -168,11 +169,10 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#8A2BE2',
     fontSize: 16,
-    fontWeight: '500',
-    fontFamily: 'Poppins-Medium',
+    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
   nextButtonTextDisabled: {
-    color: '#8A2BE2',
     opacity: 0.5,
   },
   homeIndicator: {
@@ -183,3 +183,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
