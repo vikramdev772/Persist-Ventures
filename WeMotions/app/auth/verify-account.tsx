@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,9 +29,9 @@ export default function VerifyAccount() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Link href="/auth/login" style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push('/auth/defaultlogin')} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
-        </Link>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,

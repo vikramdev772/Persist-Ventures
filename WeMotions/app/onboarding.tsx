@@ -27,14 +27,14 @@ export default function Onboarding() {
         <View style={styles.buttons}>
           <TouchableOpacity 
             style={styles.emailButton}
-            onPress={() => router.push('/auth/login')}
+            onPress={() => router.push('/auth/defaultlogin')}
           >
             <Text style={styles.emailButtonText}>continue with Email</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.socialButton}
-            onPress={() => router.push('/auth/login')}
+            onPress={() => router.push('/auth/defaultlogin')}
           >
             <Ionicons name="logo-apple" size={20} color="white" />
             <Text style={styles.socialButtonText}>continue with apple</Text>
@@ -42,7 +42,7 @@ export default function Onboarding() {
 
           <TouchableOpacity 
             style={styles.socialButton}
-            onPress={() => router.push('/auth/login')}
+            onPress={() => router.push('/auth/defaultlogin')}
           >
             <Image 
               source={require('../assets/images/google.png')} 
