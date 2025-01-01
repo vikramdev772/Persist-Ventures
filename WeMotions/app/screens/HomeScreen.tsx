@@ -1,25 +1,36 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react'
+import { View, Text, StatusBar, StyleSheet, SafeAreaView } from 'react-native'
+import { VideoFeed } from './components/VideoFeed'
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home Feed</Text>
-    </View>
-  );
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Trending</Text>
+      </View>
+
+      {/* Video Feed */}
+      <VideoFeed />
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#121212',
+    backgroundColor: '#000000',
   },
-  text: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'Poppins-Medium',
+  header: {
+    paddingTop: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 4,
   },
-});
-
+  headerText: {
+    fontSize: 16,
+    color: '#8B5CF6',
+    fontWeight: '500',
+  },
+})
