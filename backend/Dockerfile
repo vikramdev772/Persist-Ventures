@@ -1,13 +1,16 @@
 # Use Node.js 20
 FROM node:20-alpine
 
+# Update npm to the latest version
+RUN npm install -g npm@latest
+
 # Set working directory
 WORKDIR /usr/src/app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with clean install
+# Install dependencies
 RUN npm install
 
 # Copy prisma schema
