@@ -4,8 +4,8 @@ FROM node:20-alpine3.18
 # Install dependencies required for Prisma and other packages
 RUN apk add --no-cache openssl libc6-compat
 
-# Update npm to the latest version
-RUN npm install -g npm@latest
+# Update npm to a compatible version
+RUN npm install -g npm@10.5.2
 
 # Set working directory
 WORKDIR /usr/src/app
