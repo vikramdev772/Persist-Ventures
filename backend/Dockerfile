@@ -1,5 +1,8 @@
-# Use Node.js 20
-FROM node:20-alpine
+# Use Node.js 20 with Alpine 3.18
+FROM node:20-alpine3.18
+
+# Install dependencies required for Prisma and other packages
+RUN apk add --no-cache openssl libc6-compat
 
 # Update npm to the latest version
 RUN npm install -g npm@latest
@@ -10,8 +13,8 @@ WORKDIR /usr/src/app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with clean install
+RUN npm ci
 
 # Copy prisma schema
 COPY prisma ./prisma/
