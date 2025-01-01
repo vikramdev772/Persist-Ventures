@@ -33,8 +33,8 @@ export default function ForgotPasswordScreen() {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // Handle password reset logic here
       console.log('Password reset requested for:', email);
+      router.push('/auth/VerifyEmailScreen');
     }
   };
 
