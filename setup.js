@@ -16,7 +16,7 @@ console.log('Initialized npm project');
 
 // Install dependencies
 execSync('npm install express @prisma/client pg dotenv cors helmet');
-execSync('npm install typescript ts-node @types/node @types/express @types/cors prisma nodemon @types/body-parser --save-dev');
+execSync('npm install --save-dev typescript ts-node @types/node @types/express @types/cors prisma nodemon');
 console.log('Installed dependencies');
 
 // Initialize TypeScript configuration
@@ -51,6 +51,10 @@ app.use(helmet());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 async function startServer() {
   try {
@@ -112,29 +116,55 @@ packageJson.scripts = {
   "start": "node dist/server.js",
   "dev": "nodemon",
   "build": "tsc",
+  "clean": "rm -rf dist",
+  "prebuild": "npm run clean",
+  "postinstall": "prisma generate",
   "prisma:generate": "prisma generate",
   "prisma:migrate": "prisma migrate dev",
   "prisma:studio": "prisma studio"
 };
+packageJson.engines = {
+  "node": ">=20.16.0"
+};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-console.log('Updated package.json with project name and scripts');
+console.log('Updated package.json with project name, scripts, and engine');
 
 // Create Dockerfile
 const dockerfileContent = `
-FROM node:16
+# Use Node.js 20 with Alpine 3.18
+FROM node:20-alpine3.18
 
+# Install dependencies required for Prisma and other packages
+RUN apk add --no-cache openssl libc6-compat
+
+# Update npm to a compatible version
+RUN npm install -g npm@10.5.2
+
+# Set working directory
 WORKDIR /usr/src/app
 
+# Copy package files
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies with clean install
+RUN npm ci
 
+# Copy prisma schema
+COPY prisma ./prisma/
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy the rest of the application code
 COPY . .
 
+# Build TypeScript
 RUN npm run build
 
+# Expose port
 EXPOSE 3000
 
+# Start the application
 CMD ["npm", "start"]
 `;
 fs.writeFileSync('Dockerfile', dockerfileContent);
@@ -206,7 +236,6 @@ console.log('To finish setup, run:');
 console.log('1. Update the DATABASE_URL in .env with your database credentials');
 console.log('2. Run "node setup-prisma.js" to generate Prisma client and run migrations');
 console.log('3. Start the development server with "npm run dev"');
-
 
 
 // npm install express @prisma/client pg dotenv cors helmet

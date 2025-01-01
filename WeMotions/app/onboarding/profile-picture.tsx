@@ -1,10 +1,31 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, TouchableOpacity, Image } from 'react-native';
 import { Link, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfilePicture() {
   const router = useRouter();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const openGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access the gallery is required!');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!pickerResult.canceled) {
+      setSelectedImage(pickerResult.assets[0].uri);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -24,9 +45,13 @@ export default function ProfilePicture() {
           Upload a profile picture to represent yourself in the community.
         </Text>
 
-        <Pressable style={styles.avatarContainer}>
+        <Pressable style={styles.avatarContainer} onPress={openGallery}>
           <View style={styles.avatar}>
-            <Ionicons name="person" size={60} color="#FFFFFF" />
+            {selectedImage ? (
+              <Image source={{ uri: selectedImage }} style={styles.avatarImage} />
+            ) : (
+              <Ionicons name="person" size={60} color="#FFFFFF" />
+            )}
             <View style={styles.addButton}>
               <Ionicons name="add" size={24} color="#FFFFFF" />
             </View>
@@ -114,6 +139,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 16,
   },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+  },
   addButton: {
     position: 'absolute',
     bottom: 0,
@@ -161,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     borderWidth: 3,
     borderColor: '#FFFFFF',
-    transform: [{ rotate: '-90deg' }]
+    transform: [{ rotate: '-90deg' }],
   },
   progressArc: {
     position: 'absolute',
@@ -173,7 +203,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#9747FF',
     borderRightColor: 'transparent',
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '240deg' }]
+    transform: [{ rotate: '240deg' }],
   },
   progressWhiteArc: {
     position: 'absolute',
@@ -185,7 +215,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#FFFFFF',
     borderRightColor: 'transparent',
     borderBottomColor: 'transparent',
-    transform: [{ rotate: '60deg' }]
+    transform: [{ rotate: '60deg' }],
   },
   progressText: {
     color: '#FFFFFF',
@@ -217,4 +247,3 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
