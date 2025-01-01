@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { BottomNavigation } from '../components/BottomNavigation'; // Adjust the import path based on your structure
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
+import { BottomNavigation } from '../components/BottomNavigation';
+import ProfileScreen from './ProfileScreen';
+import HomeScreen from './HomeScreen';
+import DiscoverScreen from './DiscoverScreen';
+import NotificationsScreen from './NotificationsScreen';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -8,37 +12,44 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Text style={styles.content}>Home Screen</Text>;
+        return <HomeScreen />;
       case 'discover':
-        return <Text style={styles.content}>Discover Screen</Text>;
+        return <DiscoverScreen />;
       case 'video':
-        return <Text style={styles.content}>Reply/Video Screen</Text>;
+      case 'reply':
+        return (
+          <View style={styles.centerContent}>
+            <Text style={styles.content}>Camera Will Open</Text>
+          </View>
+        );
       case 'notifications':
-        return <Text style={styles.content}>Alerts Screen</Text>;
+        return <NotificationsScreen />;
       case 'profile':
-        return <Text style={styles.content}>Profile Screen</Text>;
+        return <ProfileScreen />;
       default:
         return null;
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Render dynamic content based on the active tab */}
-      <View style={styles.contentContainer}>{renderContent()}</View>
-
-      {/* Bottom Navigation Bar */}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.contentContainer}>
+        {renderContent()}
+      </View>
       <BottomNavigation activeTab={activeTab} onTabPress={setActiveTab} />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Dark background for the app
+    backgroundColor: '#121212',
   },
   contentContainer: {
+    flex: 1,
+  },
+  centerContent: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -49,3 +60,4 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
 });
+
