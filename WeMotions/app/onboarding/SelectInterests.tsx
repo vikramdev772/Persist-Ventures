@@ -37,7 +37,7 @@ export default function SelectInterests() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.skipButton} onPress={() => router.push('/home')}>
+        <TouchableOpacity style={styles.skipButton} onPress={() => router.push('/screens/App')}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +85,7 @@ export default function SelectInterests() {
 
           <TouchableOpacity 
             style={styles.nextButton}
-            onPress={() => router.push('/home')}
+            onPress={() => router.push('/screens/App')}
           >
             <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
