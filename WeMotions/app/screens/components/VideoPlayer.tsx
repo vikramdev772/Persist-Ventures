@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av'
 import { Ionicons } from '@expo/vector-icons'
@@ -22,9 +22,9 @@ interface VideoPlayerProps {
   isActive: boolean
 }
 
-export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
-  const [status, setStatus] = useState<AVPlaybackStatus>({} as AVPlaybackStatus)
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, isActive }) => {
   const videoRef = useRef<Video>(null)
+  const [status, setStatus] = useState<AVPlaybackStatus>({} as AVPlaybackStatus)
 
   useEffect(() => {
     if (isActive) {
@@ -34,9 +34,13 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
     }
   }, [isActive])
 
+  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    setStatus(status)
+  }
+
   return (
     <View style={styles.container}>
-      {/* Video Content */}
+      {/* Video */}
       <Video
         ref={videoRef}
         source={{ uri: video.url }}
@@ -44,38 +48,39 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
         shouldPlay={isActive}
         isLooping
         resizeMode={ResizeMode.COVER}
-        onPlaybackStatusUpdate={status => setStatus(() => status)}
+        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
       />
 
-      {/* Right Side Actions */}
+      {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="heart-outline" size={24} color="#FFF" />
-          <Text style={styles.actionText}>{video.stats.likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="chatbubble-outline" size={24} color="#FFF" />
-          <Text style={styles.actionText}>{video.stats.comments}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="bookmark-outline" size={24} color="#FFF" />
-          <Text style={styles.actionText}>{video.stats.shares}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="paper-plane-outline" size={24} color="#FFF" />
-          <Text style={styles.actionText}>{video.stats.forwards}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#FFF" />
-        </TouchableOpacity>
+        {[
+          { icon: 'heart-outline', count: video.stats.likes, label: 'Like' },
+          { icon: 'chatbubble-outline', count: video.stats.comments, label: 'Comment' },
+          { icon: 'bookmark-outline', count: video.stats.shares, label: 'Share' },
+          { icon: 'paper-plane-outline', count: video.stats.forwards, label: 'Forward' },
+          { icon: 'ellipsis-vertical', count: '', label: 'More options' }
+        ].map(({ icon, count, label }, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.actionButton}
+            accessible={true}
+            accessibilityLabel={label}
+            accessibilityRole="button"
+          >
+            <Ionicons name={icon as any} size={24} color="#FFF" />
+            {count && <Text style={styles.actionText}>{count}</Text>}
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* User Info */}
       <View style={styles.userInfo}>
         <View style={styles.userHeader}>
           <Image 
-            source={{ uri: video.user.avatar }}
-            style={styles.avatar}
+            source={{ uri: video.user.avatar }} 
+            style={styles.avatar} 
+            accessible={true}
+            accessibilityLabel={`${video.user.name}'s avatar`}
           />
           <View style={styles.userMeta}>
             <Text style={styles.username}>{video.user.name}</Text>
@@ -93,14 +98,14 @@ const { width, height } = Dimensions.get('window')
 const styles = StyleSheet.create({
   container: {
     width,
-    height: height - 80, // Account for bottom navigation
-    backgroundColor: '#000000',
+    height: height - 78,
+    backgroundColor: '#000',
     position: 'relative',
   },
   video: {
     width: '100%',
-    height: '100%',
-    backgroundColor: '#000000',
+    height: '95%',
+    backgroundColor: '#000',
   },
   actions: {
     position: 'absolute',
@@ -114,7 +119,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionText: {
-    color: '#FFFFFF',
+    color: '#FFF',
     fontSize: 13,
   },
   userInfo: {
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1C1C1C',
   },
   username: {
-    color: '#FFFFFF',
+    color: '#FFF',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -148,7 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   description: {
-    color: '#FFFFFF',
+    color: '#FFF',
     fontSize: 13,
     lineHeight: 18,
   },
