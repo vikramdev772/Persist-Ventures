@@ -25,6 +25,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 16,
     backgroundColor: '#000000', // Use theme.black for better scaling if a theme is used
   },
   header: {

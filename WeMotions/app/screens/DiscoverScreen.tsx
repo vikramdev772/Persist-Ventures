@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity, Modal, Dimensions } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Video } from 'expo-av';
 import ReelsViewer from './components/reels-viewer';
 
 // Sample data with video URLs
@@ -9,49 +10,43 @@ const reelsData = [
     id: '1',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794204/reels/docyamg8euojeuuypnnj.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794204/reels/docyamg8euojeuuypnnj.mp4'
   },
   {
     id: '2',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794206/reels/an9wuutgiydiljsvqvzj.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794206/reels/an9wuutgiydiljsvqvzj.mp4'
   },
   {
     id: '3',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794211/reels/wa1baviitk8finyf7q1w.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794211/reels/wa1baviitk8finyf7q1w.mp4'
   },
   {
     id: '4',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794188/reels/g9pl0ij0z0myssslgwr1.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794188/reels/g9pl0ij0z0myssslgwr1.mp4'
   },
   {
     id: '5',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794189/reels/gc25ckuuuhaplcimbwdq.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794189/reels/gc25ckuuuhaplcimbwdq.mp4'
   },
   {
     id: '6',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794184/reels/pgl4lghjxbsyptqbdges.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794184/reels/pgl4lghjxbsyptqbdges.mp4'
   },
   {
     id: '7',
     username: 'Rosalie_Gorczany',
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794140/reels/rgzvezoewtzwf0yjgr1r.mp4',
-    thumbnailUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794140/reels/rgzvezoewtzwf0yjgr1r.mp4'
   },
 ];
 
 export default function DiscoverScreen() {
   const [selectedReel, setSelectedReel] = useState(null);
   const [showReels, setShowReels] = useState(false);
+  const videoRefs = useRef({});
 
   const handleReelPress = (index) => {
     setSelectedReel(index);
@@ -78,9 +73,14 @@ export default function DiscoverScreen() {
               style={styles.gridItem}
               onPress={() => handleReelPress(index)}
             >
-              <Image
-                source={{ uri: item.thumbnailUrl }}
-                style={styles.gridImage}
+              <Video
+                ref={ref => (videoRefs.current[index] = ref)}
+                source={{ uri: item.videoUrl }}
+                style={styles.gridVideo}
+                resizeMode="cover"
+                shouldPlay={false}
+                isMuted={true}
+                isLooping={true}
               />
               <View style={styles.userInfo}>
                 <View style={styles.userAvatar}>
@@ -139,10 +139,10 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     width: '33.33%',
-    aspectRatio: 1,
+    aspectRatio: 0.75, // Changed from 1 to 0.75 to make items taller
     padding: 1,
   },
-  gridImage: {
+  gridVideo: {
     width: '100%',
     height: '100%',
     backgroundColor: '#1A1A1A',
@@ -163,4 +163,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   }
 });
-

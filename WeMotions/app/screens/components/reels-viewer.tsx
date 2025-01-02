@@ -6,11 +6,15 @@ import {
   FlatList,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
+const BOTTOM_NAV_HEIGHT = 49;
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : 0;
+const ACTUAL_HEIGHT = WINDOW_HEIGHT - BOTTOM_NAV_HEIGHT;  // Removed STATUS_BAR_HEIGHT subtraction
 
 export default function ReelsViewer({ reels, initialIndex = 0, onClose }) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -72,14 +76,22 @@ export default function ReelsViewer({ reels, initialIndex = 0, onClose }) {
         }}
         initialScrollIndex={initialIndex}
         getItemLayout={(data, index) => ({
-          length: WINDOW_HEIGHT,
-          offset: WINDOW_HEIGHT * index,
+          length: ACTUAL_HEIGHT,
+          offset: ACTUAL_HEIGHT * index,
           index,
         })}
+        snapToInterval={ACTUAL_HEIGHT}  // Added to ensure proper snapping
+        decelerationRate="fast"         // Added for smooth scrolling
       />
 
       {/* Close Button */}
-      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+      <TouchableOpacity 
+        style={[
+          styles.closeButton, 
+          { top: Platform.OS === 'ios' ? STATUS_BAR_HEIGHT + 10 : 20 }
+        ]} 
+        onPress={onClose}
+      >
         <Ionicons name="close" size={28} color="#FFF" />
       </TouchableOpacity>
     </View>
@@ -93,7 +105,7 @@ const styles = StyleSheet.create({
   },
   reelContainer: {
     width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
+    height: ACTUAL_HEIGHT,
   },
   video: {
     flex: 1,
@@ -106,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   overlayContent: {
-    marginBottom: 50,
+    marginBottom: 20,
   },
   userInfo: {
     flexDirection: 'row',
@@ -121,10 +133,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 40,
     right: 20,
     zIndex: 1,
     padding: 10,
   },
 });
-
