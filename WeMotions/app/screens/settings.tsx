@@ -51,7 +51,7 @@ const Settings: React.FC = () => {
           <SettingItem
             icon="person-outline"
             label="Mange Account"
-            onPress={() => router.push('/screens/manage-account')}
+            onPress={() => router.push('/screens/settings/manage-account')}
           />
         </View>
 
@@ -61,7 +61,7 @@ const Settings: React.FC = () => {
           <SettingItem
             icon="moon-outline"
             label="Theme"
-            onPress={() => router.push('/screens/theme')}
+            onPress={() => router.push('/screens/settings/theme')}
           />
           <SettingItem
             icon="search-circle-outline"
