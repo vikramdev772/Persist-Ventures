@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Text, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { VideoCamera } from './VideoCamera';
+import { ReplyChat } from './ReplyChat';
 
 interface BottomNavigationProps {
   activeTab: string;
@@ -9,11 +11,16 @@ interface BottomNavigationProps {
 
 export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProps) {
   const [centerMode, setCenterMode] = useState<'video' | 'reply'>('video');
+  const [showModal, setShowModal] = useState(false);
 
   const toggleCenterMode = () => {
     const newMode = centerMode === 'video' ? 'reply' : 'video';
     setCenterMode(newMode);
-    onTabPress(newMode);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -98,6 +105,20 @@ export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProp
           color={activeTab === 'profile' ? '#8B5CF6' : '#FFF'} 
         />
       </TouchableOpacity>
+
+      {/* Modal for Video/Reply */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={showModal}
+        onRequestClose={closeModal}
+      >
+        {centerMode === 'video' ? (
+          <VideoCamera onClose={closeModal} />
+        ) : (
+          <ReplyChat onClose={closeModal} />
+        )}
+      </Modal>
     </View>
   );
 }
@@ -153,3 +174,4 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
+
