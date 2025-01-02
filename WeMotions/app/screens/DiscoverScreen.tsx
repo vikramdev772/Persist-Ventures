@@ -76,7 +76,64 @@ const reelsData = [
     likes: '79.4K',
     comments: '1,897'
   },
+  {
+    id: '8',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831360/reels/dof6dbezdwngsmt2th2c.mp4',
+    likes: '89.3K',
+    comments: '2,210'
+  },
+  {
+    id: '9',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831262/reels/q9dzt4tgalgzrwbyd6fv.mp4',
+    likes: '84.7K',
+    comments: '1,980'
+  },
+  {
+    id: '10',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831263/reels/tczvjpxdhs6mtk12agba.mp4',
+    likes: '91.2K',
+    comments: '2,450'
+  },
+  {
+    id: '11',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831268/reels/x0jguetnkhi3jcp4fclc.mp4',
+    likes: '87.1K',
+    comments: '2,130'
+  },
+  {
+    id: '12',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831283/reels/nkzbwigajhvgyr4w7v0e.mp4',
+    likes: '94.5K',
+    comments: '2,620'
+  },
+  {
+    id: '13',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831306/reels/dadiqdt5fulwyvysnyw9.mp4',
+    likes: '89.8K',
+    comments: '2,340'
+  },
+  {
+    id: '14',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831306/reels/ydtwt746fq8gcvkhv7uw.mp4',
+    likes: '90.4K',
+    comments: '2,410'
+  },
+  {
+    id: '15',
+    username: 'Rosalie_Gorczany',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831344/reels/cjxw1uihtj5elqduugcu.mp4',
+    likes: '85.6K',
+    comments: '2,050'
+  }
 ];
+
 
 interface ReelsViewerProps {
   reels: ReelData[];
