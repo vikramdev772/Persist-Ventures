@@ -37,7 +37,7 @@ const SAMPLE_VIDEOS = [
   },
   {
     id: '3',
-    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794211/reels/wa1baviitk8finyf7q1w.mp4',
+    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735918574/nature/mlucrhxscebbvnhau1d9.mp4',
     user: {
       name: 'Taylor.Swift',
       avatar: '/placeholder.svg?height=40&width=40',
