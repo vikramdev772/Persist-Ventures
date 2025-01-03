@@ -30,7 +30,7 @@ const reelsData = [
   {
     id: '1',
     username: 'Rosalie_Gorczany',
-    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794204/reels/docyamg8euojeuuypnnj.mp4',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735720167/reels/yrxzhevr6yuks15qhrwk.mp4',
     likes: '87.5K',
     comments: '2,091'
   },

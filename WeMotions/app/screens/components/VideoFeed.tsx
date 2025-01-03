@@ -37,7 +37,7 @@ const SAMPLE_VIDEOS = [
   },
   {
     id: '3',
-    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735714756/reels/aundqgrxzlcry1n7fqpa.mp4',
+    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794211/reels/wa1baviitk8finyf7q1w.mp4',
     user: {
       name: 'Taylor.Swift',
       avatar: '/placeholder.svg?height=40&width=40',
@@ -101,7 +101,7 @@ const SAMPLE_VIDEOS = [
   },
   {
     id: '7',
-    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735720116/reels/ncujpkg7dmcjbsayrqe5.mp4',
+    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735918572/nature/xmdgj2ygms65m4zfqi5p.mp4',    
     user: {
       name: 'Lara.Croft',
       avatar: '/placeholder.svg?height=40&width=40',
@@ -117,7 +117,8 @@ const SAMPLE_VIDEOS = [
   },
   {
     id: '8',
-    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735720167/reels/yrxzhevr6yuks15qhrwk.mp4',
+    
+    url: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794204/reels/docyamg8euojeuuypnnj.mp4',
     user: {
       name: 'Peter.Parker',
       avatar: '/placeholder.svg?height=40&width=40',
