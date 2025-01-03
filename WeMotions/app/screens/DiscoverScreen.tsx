@@ -1,20 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  Dimensions,
-  FlatList,
-  Platform,
-  StyleSheet,
-} from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { Video, AVPlaybackStatus } from 'expo-av';
+import { View, Dimensions, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { VideoPlayer } from './components/VideoPlayer'; // Ensure the path to VideoPlayer is correct
+
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 type ReelData = {
   id: string;
@@ -24,13 +14,11 @@ type ReelData = {
   comments: string;
 };
 
-const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
-
 const reelsData = [
   {
     id: '1',
     username: 'Rosalie_Gorczany',
-    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735720167/reels/yrxzhevr6yuks15qhrwk.mp4',
+    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735794204/reels/docyamg8euojeuuypnnj.mp4',
     likes: '87.5K',
     comments: '2,091'
   },
@@ -110,332 +98,67 @@ const reelsData = [
     videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831283/reels/nkzbwigajhvgyr4w7v0e.mp4',
     likes: '94.5K',
     comments: '2,620'
-  },
-  {
-    id: '13',
-    username: 'Rosalie_Gorczany',
-    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831306/reels/dadiqdt5fulwyvysnyw9.mp4',
-    likes: '89.8K',
-    comments: '2,340'
-  },
-  {
-    id: '14',
-    username: 'Rosalie_Gorczany',
-    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831306/reels/ydtwt746fq8gcvkhv7uw.mp4',
-    likes: '90.4K',
-    comments: '2,410'
-  },
-  {
-    id: '15',
-    username: 'Rosalie_Gorczany',
-    videoUrl: 'https://res.cloudinary.com/dzienjo1z/video/upload/v1735831344/reels/cjxw1uihtj5elqduugcu.mp4',
-    likes: '85.6K',
-    comments: '2,050'
   }
 ];
-
-
-interface ReelsViewerProps {
-  reels: ReelData[];
-  initialIndex: number;
-  onClose: () => void;
-}
-
-const ReelsViewer: React.FC<ReelsViewerProps> = ({ reels, initialIndex = 0, onClose }) => {
-  const [activeIndex, setActiveIndex] = useState(initialIndex);
+const App: React.FC = () => {
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
-  const videoRefs = useRef<{ [key: string]: Video | null }>({});
 
-  const onViewableItemsChanged = useCallback(({ changed }: { changed: any[] }) => {
-    changed.forEach(element => {
-      const cell = videoRefs.current[element.key];
-      if (cell) {
-        if (element.isViewable) {
-          cell.playAsync();
-          setActiveIndex(element.index);
-        } else {
-          cell.stopAsync();
-        }
-      }
-    });
+  const handleViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      const newActiveIndex = viewableItems[0]?.index || 0;
+      setActiveIndex(newActiveIndex);
+    }
   }, []);
 
-  const renderItem = useCallback(({ item, index }: { item: ReelData; index: number }) => (
-    <View style={styles.reelContainer}>
-      <Video
-        ref={ref => (videoRefs.current[index] = ref)}
-        source={{ uri: item.videoUrl }}
-        style={styles.video}
-        resizeMode="cover"
-        shouldPlay={index === activeIndex}
-        isLooping
-        isMuted={false}
-      />
-      
-      <View style={styles.overlay}>
-        <View style={styles.overlayContent}>
-          <View style={styles.userInfo}>
-            <Ionicons name="person-circle" size={40} color="#FFD700" />
-            <Text style={styles.username}>{item.username}</Text>
-          </View>
-          
-          <View style={styles.socialIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="heart-outline" size={28} color="#FFF" />
-              <Text style={styles.iconText}>{item.likes}</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="chatbubble-outline" size={28} color="#FFF" />
-              <Text style={styles.iconText}>{item.comments}</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="paper-plane-outline" size={28} color="#FFF" />
-              <Text style={styles.iconText}>Share</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </View>
-  ), [activeIndex]);
-
-  return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <StatusBar style="light" />
-      <View style={styles.reelsViewerContainer}>
-        <FlatList
-          ref={flatListRef}
-          data={reels}
-          renderItem={renderItem}
-          keyExtractor={(_, index) => index.toString()}
-          pagingEnabled
-          vertical
-          showsVerticalScrollIndicator={false}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={{
-            itemVisiblePercentThreshold: 50
-          }}
-          initialScrollIndex={initialIndex}
-          getItemLayout={(_, index) => ({
-            length: WINDOW_HEIGHT,
-            offset: WINDOW_HEIGHT * index,
-            index,
-          })}
-        />
-
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={28} color="#FFF" />
-          </TouchableOpacity>
-          <View style={styles.tabsContainer}>
-            <Text style={styles.activeTab}>Trending</Text>
-            <Text style={styles.inactiveTab}>Following</Text>
-          </View>
-        </View>
-      </View>
-    </SafeAreaView>
-  );
-};
-
-const DiscoverScreen: React.FC = () => {
-  const [selectedReel, setSelectedReel] = useState<number | null>(null);
-  const [showReels, setShowReels] = useState(false);
-  const videoRefs = useRef<{ [key: string]: Video | null }>({});
-
-  const handleReelPress = (index: number) => {
-    setSelectedReel(index);
-    setShowReels(true);
+  const viewabilityConfig = {
+    itemVisiblePercentThreshold: 80,
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for user"
-            placeholderTextColor="#666"
+      <FlatList
+        ref={flatListRef}
+        data={reelsData}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <VideoPlayer
+            video={{
+              url: item.videoUrl,
+              user: {
+                name: item.username,
+                avatar: 'https://via.placeholder.com/40', // Replace with actual avatar URL
+                badge: 'Top Creator',
+                description: 'Enjoying the vibes!',
+              },
+              stats: {
+                likes: item.likes,
+                shares: '1.2K',
+                comments: item.comments,
+                forwards: '300',
+              },
+            }}
+            isActive={index === activeIndex}
           />
-        </View>
-
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.gridContainer}>
-            {reelsData.map((item, index) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.gridItem}
-                onPress={() => handleReelPress(index)}
-              >
-                <Video
-                  ref={ref => (videoRefs.current[index] = ref)}
-                  source={{ uri: item.videoUrl }}
-                  style={styles.gridVideo}
-                  resizeMode="cover"
-                  shouldPlay={false}
-                  isMuted={true}
-                />
-                <View style={styles.gridUserInfo}>
-                  <Ionicons name="person-circle" size={20} color="#FFD700" />
-                  <Text style={styles.gridUsername}>{item.username}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-
-        <Modal
-          visible={showReels}
-          animationType="fade"
-          onRequestClose={() => setShowReels(false)}
-          statusBarTranslucent
-        >
-          {selectedReel !== null && (
-            <ReelsViewer
-              reels={reelsData}
-              initialIndex={selectedReel}
-              onClose={() => setShowReels(false)}
-            />
-          )}
-        </Modal>
-      </View>
+        )}
+        pagingEnabled
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        onViewableItemsChanged={handleViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+      />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
   container: {
     flex: 1,
-  },
-  searchContainer: {
-    padding: 16,
-  },
-  searchInput: {
-    backgroundColor: '#1A1A1A',
-    borderRadius: 8,
-    padding: 12,
-    color: '#FFF',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 1,
-  },
-  gridItem: {
-    width: '33.33%',
-    aspectRatio: 0.75,
-    padding: 1,
-  },
-  gridVideo: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#1A1A1A',
-  },
-  gridUserInfo: {
-    position: 'absolute',
-    bottom: 8,
-    left: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  gridUsername: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  reelsViewerContainer: {
-    flex: 1,
-  },
-  reelContainer: {
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-  },
-  video: {
-    flex: 1,
     backgroundColor: '#000',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  overlayContent: {
-    marginBottom: 20,
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    zIndex: 1,
-  },
-  closeButton: {
-    padding: 8,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'center',
-    marginRight: 28,
-  },
-  activeTab: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginHorizontal: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
-    paddingBottom: 4,
-  },
-  inactiveTab: {
-    color: '#999',
-    fontSize: 16,
-    marginHorizontal: 8,
-    paddingBottom: 4,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  username: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  socialIcons: {
-    position: 'absolute',
-    right: 0,
-    bottom: 20,
-    alignItems: 'center',
-  },
-  iconButton: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  iconText: {
-    color: '#FFF',
-    fontSize: 12,
-    marginTop: 4,
   },
 });
 
-export default DiscoverScreen;
+export default App;
