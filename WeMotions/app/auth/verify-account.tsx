@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { VerificationInput } from '../components/ui/verification-input';
 import { CountdownTimer } from '../components/ui/countdown-timer';
@@ -10,19 +10,33 @@ export default function VerifyAccount() {
   const [verificationCode, setVerificationCode] = useState('');
   const [isResendActive, setIsResendActive] = useState(false);
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(true);
   const router = useRouter();
 
+  useEffect(() => {
+    return () => {
+      setMounted(false);
+    };
+  }, []);
+
   const handleResend = () => {
-    setIsResendActive(false);
-    setError('');
+    if (mounted) {
+      setIsResendActive(false);
+      setError('');
+    }
   };
 
   const handleVerify = () => {
-    // For testing purposes, using default OTP 12345
     if (verificationCode === '12345') {
       router.push('/auth/verification-success');
     } else {
       setError('Wrong Code Verification');
+    }
+  };
+
+  const handleTimerComplete = () => {
+    if (mounted) {
+      setIsResendActive(true);
     }
   };
 
@@ -58,7 +72,7 @@ export default function VerifyAccount() {
           ) : null}
           <CountdownTimer
             initialSeconds={59}
-            onComplete={() => setIsResendActive(true)}
+            onComplete={handleTimerComplete}
           />
         </View>
 
