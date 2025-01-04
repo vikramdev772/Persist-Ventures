@@ -1,76 +1,98 @@
-import React from 'react'
-import { View, Image, Text, StyleSheet, Dimensions } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useCallback } from 'react';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import type { ReelData } from '../types';
 
 interface VideoGridProps {
-  videos?: Array<{
-    id: string
-    thumbnail: string
-    views: string
-  }>
+  videos: ReelData[];
+  onVideoSelect: (video: ReelData) => void;
+  isLoading?: boolean;
 }
 
-export function VideoGrid({ videos = [] }: VideoGridProps) {
-  // If no videos provided, show 6 placeholder items
-  const items = videos.length > 0 ? videos : Array(6).fill({
-    id: 'placeholder',
-    thumbnail: '/placeholder.svg?height=200&width=200',
-    views: '999k'
-  })
+const { width } = Dimensions.get('window');
+const numColumns = 3;
+const ITEM_WIDTH = width / numColumns;
+const ITEM_HEIGHT = ITEM_WIDTH * 1.5;
+
+export const VideoGrid: React.FC<VideoGridProps> = ({ 
+  videos, 
+  onVideoSelect, 
+  isLoading 
+}) => {
+  const renderItem = useCallback(({ item }: { item: ReelData }) => (
+    <TouchableOpacity
+      style={styles.gridItem}
+      onPress={() => onVideoSelect(item)}
+      activeOpacity={0.7}
+    >
+      <Image
+        source={{ 
+          uri: item.videoUrl.replace('.mp4', '.jpg') 
+        }}
+        style={styles.thumbnail}
+        resizeMode="cover"
+      />
+      <View style={styles.overlay}>
+        <Ionicons name="play-circle-outline" size={24} color="white" />
+      </View>
+    </TouchableOpacity>
+  ), [onVideoSelect]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      {items.map((video, index) => (
-        <View key={video.id + index} style={styles.videoItem}>
-          <Image
-            source={{ uri: video.thumbnail }}
-            style={styles.thumbnail}
-          />
-          <View style={styles.viewCount}>
-            <Ionicons name="play-outline" size={12} color="#FFF" />
-            <Text style={styles.viewCountText}>{video.views}</Text>
-          </View>
-        </View>
-      ))}
-    </View>
-  )
-}
-
-const { width } = Dimensions.get('window')
-const itemWidth = (width - 32 - 2) / 3 // 32 for padding, 2 for gaps
+    <FlatList
+      data={videos}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      numColumns={numColumns}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.container}
+      initialNumToRender={12}
+      maxToRenderPerBatch={9}
+      windowSize={5}
+      removeClippedSubviews={true}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 16,
-    gap: 1,
+    paddingTop: 1,
   },
-  videoItem: {
-    width: itemWidth,
-    height: itemWidth * 1.5,
-    position: 'relative',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gridItem: {
+    width: ITEM_WIDTH,
+    height: ITEM_HEIGHT,
+    padding: 1,
   },
   thumbnail: {
     width: '100%',
     height: '100%',
     backgroundColor: '#1C1C1C',
   },
-  viewCount: {
-    position: 'absolute',
-    bottom: 8,
-    left: 8,
-    flexDirection: 'row',
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
   },
-  viewCountText: {
-    color: '#FFF',
-    fontSize: 12,
-  },
-})
-
+});
